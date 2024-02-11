@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.ocrv.library_adm.exception.exceptions.AccessDeniedException;
 import ru.ocrv.library_adm.exception.exceptions.NotFoundException;
 import ru.ocrv.library_adm.reader.QReader;
 import ru.ocrv.library_adm.reader.Reader;
@@ -16,7 +17,7 @@ import ru.ocrv.library_adm.reader.ReaderMapper;
 import ru.ocrv.library_adm.reader.ReaderStorage;
 import ru.ocrv.library_adm.reader.dto.ReaderDtoRequest;
 import ru.ocrv.library_adm.reader.dto.ReaderDtoResponse;
-
+import ru.ocrv.library_adm.rent.RentStorage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 public class ReaderServiceImpl implements ReaderService {
 
     private final ReaderStorage readerStorage;
+    private final RentStorage rentStorage;
 
     @Override
     public ReaderDtoResponse createReader(ReaderDtoRequest request) {
@@ -42,6 +44,9 @@ public class ReaderServiceImpl implements ReaderService {
     @Override
     public void deleteReader(Long id) {
         isReaderExists(id);
+        if (rentStorage.existsByReaderIdAndEndDate(id, null)) {
+            throw new AccessDeniedException("У читателя есть не завершенные аренды");
+        }
         readerStorage.deleteById(id);
         log.info("Удален читатель с id: {}", id);
     }
@@ -98,16 +103,13 @@ public class ReaderServiceImpl implements ReaderService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public Boolean isReaderExists(Long id) {
+    private void isReaderExists(Long id) {
         if (!readerStorage.existsReaderById(id)) {
             throw new NotFoundException("Читатель с id " + id + " не найден");
         }
-        return true;
     }
 
-    @Override
-    public Reader findReader(Long id) {
+    private Reader findReader(Long id) {
         return readerStorage.findById(id)
                 .orElseThrow(() -> new NotFoundException("Читатель с id " + id + " не найден"));
     }

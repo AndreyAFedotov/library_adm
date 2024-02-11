@@ -138,3 +138,11 @@ databaseChangeLog:
                   type: TIMESTAMP WITHOUT TIME ZONE
                   constraints:
                     nullable: false
+  - changeSet:
+      id: 2
+      author: Fedotov
+      comment: change field constraints
+      changes:
+        - dropNotNullConstraint:
+            columnName: end_date
+            tableName: rents

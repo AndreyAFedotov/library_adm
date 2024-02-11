@@ -1,6 +1,7 @@
 package ru.ocrv.library_adm.rent.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -8,14 +9,15 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Schema(title = "Запрос к эндпоинту аренды")
 public class RentDtoRequest {
 
-    private Long id;
-
-    @NotBlank
+    @Schema(title = "ID книги", example = "1")
+    @NotNull(message = "ID книги должен быть заполнен")
     private Long book;
 
-    @NotBlank
+    @Schema(title = "ID читателя", example = "5")
+    @NotNull(message = "ID читателя должен быть заполнен")
     private Long reader;
 
 }

@@ -11,7 +11,7 @@ public interface BookStorage extends JpaRepository<Book, Long>, QuerydslPredicat
 
     Boolean existsBookByAuthorId(Long authorId);
 
-    Page<Book> searchBooksByAuthorId(Long aurhoId, Pageable pageable);
+    Page<Book> searchBooksByAuthorId(Long authorId, Pageable pageable);
 
     Boolean existsBookByIdAndRented(Long id, Boolean rented);
 

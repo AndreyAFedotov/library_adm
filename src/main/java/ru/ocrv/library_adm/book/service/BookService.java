@@ -1,6 +1,5 @@
 package ru.ocrv.library_adm.book.service;
 
-import ru.ocrv.library_adm.book.Book;
 import ru.ocrv.library_adm.book.dto.BookDtoRequest;
 import ru.ocrv.library_adm.book.dto.BookDtoResponse;
 
@@ -18,13 +17,6 @@ public interface BookService {
 
     List<BookDtoResponse> searchBooks(String word, int from, int size);
 
-    Boolean isBookExists(Long id);
-
-    Book findBook(Long id);
-
-    Boolean isBooksByAuthorExists(Long authorId);
-
     List<BookDtoResponse> searchBooksByAuthor(Long authorId, int from, int size);
 
-    Boolean isBookRented(Long id);
 }

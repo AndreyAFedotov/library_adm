@@ -7,7 +7,7 @@ import ru.ocrv.library_adm.author.Author;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "readers")
+@Table(name = "books")
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter

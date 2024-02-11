@@ -1,7 +1,5 @@
 package ru.ocrv.library_adm.reader.service;
 
-import ru.ocrv.library_adm.author.Author;
-import ru.ocrv.library_adm.reader.Reader;
 import ru.ocrv.library_adm.reader.dto.ReaderDtoRequest;
 import ru.ocrv.library_adm.reader.dto.ReaderDtoResponse;
 
@@ -19,7 +17,4 @@ public interface ReaderService {
 
     List<ReaderDtoResponse> searchReaders(String word, int from, int size);
 
-    Boolean isReaderExists(Long id);
-
-    Reader findReader(Long id);
 }

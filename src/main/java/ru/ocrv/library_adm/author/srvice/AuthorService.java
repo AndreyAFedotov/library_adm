@@ -1,6 +1,5 @@
 package ru.ocrv.library_adm.author.srvice;
 
-import ru.ocrv.library_adm.author.Author;
 import ru.ocrv.library_adm.author.dto.AuthorDtoRequest;
 import ru.ocrv.library_adm.author.dto.AuthorDtoResponse;
 
@@ -18,7 +17,4 @@ public interface AuthorService {
 
     List<AuthorDtoResponse> searchAuthors(String word, int from, int size);
 
-    Boolean isAuthorExists(Long id);
-
-    Author findAuthor(Long id);
 }

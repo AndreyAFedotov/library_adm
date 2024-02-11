@@ -13,10 +13,6 @@ public interface RentService {
 
     void deleteRent(Long id);
 
-    RentDtoResponse updateRent(Long id, RentDtoRequest request);
-
-    List<RentDtoResponse> getRents (int from, int size);
-
     List<RentDtoResponse> getRentsForReader(Long readerId, int from, int size);
 
     RentDtoResponse getRent(Long id);

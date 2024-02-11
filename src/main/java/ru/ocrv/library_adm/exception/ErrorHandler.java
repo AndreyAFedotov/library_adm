@@ -4,18 +4,17 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.ocrv.library_adm.exception.exceptions.AccessDeniedException;
 import ru.ocrv.library_adm.exception.exceptions.NotFoundException;
-import ru.ocrv.library_adm.exception.exceptions.ValidationException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 @RestControllerAdvice()
 @Slf4j
@@ -24,8 +23,9 @@ public class ErrorHandler {
     private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @ExceptionHandler({
-            ValidationException.class,
-            MethodArgumentNotValidException.class
+            MethodArgumentNotValidException.class,
+            HttpMessageNotReadableException.class,
+            HttpRequestMethodNotSupportedException.class
     }
     )
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
@@ -62,7 +62,6 @@ public class ErrorHandler {
                 .reason("Other error.")
                 .message(e.getMessage())
                 .timestamp(LocalDateTime.now().format(FORMAT))
-                .error(stToStrings(e.getStackTrace()))
                 .build();
     }
 
@@ -79,16 +78,7 @@ public class ErrorHandler {
                 .reason("Integrity constraint has been violated.")
                 .message(e.getMessage())
                 .timestamp(LocalDateTime.now().format(FORMAT))
-                .error(stToStrings(e.getStackTrace()))
                 .build();
-    }
-
-    private List<String> stToStrings(StackTraceElement[] st) {
-        List<String> result = new ArrayList<>();
-        for (StackTraceElement ste : st) {
-            result.add(ste.toString());
-        }
-        return result;
     }
 
 }

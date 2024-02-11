@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ocrv.library_adm.author.Author;
-import ru.ocrv.library_adm.author.srvice.AuthorService;
+import ru.ocrv.library_adm.author.AuthorStorage;
 import ru.ocrv.library_adm.book.Book;
 import ru.ocrv.library_adm.book.BookMapper;
 import ru.ocrv.library_adm.book.BookStorage;
@@ -31,11 +31,11 @@ import java.util.stream.Collectors;
 public class BookServiceImpl implements BookService {
 
     private final BookStorage bookStorage;
-    private final AuthorService authorService;
+    private final AuthorStorage authorStorage;
 
     @Override
     public BookDtoResponse createBook(BookDtoRequest request) {
-        Author author = authorService.findAuthor(request.getAuthor());
+        Author author = findAuthor(request.getAuthor());
         Book book = bookStorage.save(BookMapper.toBook(author, request));
         log.info("Создана книга с id: {}", book.getId());
 
@@ -52,7 +52,8 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookDtoResponse updateBook(Long id, BookDtoRequest request) {
         Book book = findBook(id);
-        Optional.ofNullable(authorService.findAuthor(request.getAuthor())).ifPresent(book::setAuthor);
+        isAuthorExists(request.getAuthor());
+        Optional.ofNullable(findAuthor(request.getAuthor())).ifPresent(book::setAuthor);
         Optional.ofNullable(request.getTitle()).ifPresent(book::setTitle);
         Optional.ofNullable(request.getPublishing()).ifPresent(book::setPublishing);
         Optional.ofNullable(request.getPublishingDate()).ifPresent(book::setPublishingDate);
@@ -76,7 +77,6 @@ public class BookServiceImpl implements BookService {
         if (StringUtils.isBlank(word)) {
             return new ArrayList<>();
         }
-
         List<BooleanExpression> conditions = new ArrayList<>();
         conditions.add(QBook.book.author.firstName.containsIgnoreCase(word));
         conditions.add(QBook.book.author.lastName.containsIgnoreCase(word));
@@ -97,7 +97,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookDtoResponse> searchBooksByAuthor(Long authorId, int from, int size) {
-        authorService.isAuthorExists(authorId);
+        isAuthorExists(authorId);
         Pageable pageable = PageRequest.of(from / size, size);
         Page<Book> books = bookStorage.searchBooksByAuthorId(authorId, pageable);
         log.info("Поиск завершен для автора с id: {}", authorId);
@@ -108,30 +108,26 @@ public class BookServiceImpl implements BookService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public Boolean isBookRented(Long id) {
-        return bookStorage.existsBookByIdAndRented(id, true);
-    }
-
-    @Override
-    public Boolean isBookExists(Long id) {
+    private void isBookExists(Long id) {
         if (bookStorage.existsBookById(id)) {
             throw new NotFoundException("Книга с id " + id + " не найдена");
         }
-        return true;
     }
 
-    @Override
-    public Book findBook(Long id) {
+    private Book findBook(Long id) {
         return bookStorage.findById(id)
                 .orElseThrow(() -> new NotFoundException("Книга с id " + id + " не найдена"));
     }
 
-    @Override
-    public Boolean isBooksByAuthorExists(Long authorId) {
-        return bookStorage.existsBookByAuthorId(authorId);
+    private Author findAuthor(Long id) {
+        return authorStorage.findById(id)
+                .orElseThrow(() -> new NotFoundException("Автор с id " + id + " не найден"));
     }
 
-
+    private void isAuthorExists(Long id) {
+        if (!authorStorage.existsAuthorById(id)) {
+            throw new NotFoundException("Автор с id " + id + " не найден");
+        }
+    }
 
 }

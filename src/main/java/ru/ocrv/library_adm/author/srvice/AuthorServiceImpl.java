@@ -15,7 +15,7 @@ import ru.ocrv.library_adm.author.AuthorStorage;
 import ru.ocrv.library_adm.author.QAuthor;
 import ru.ocrv.library_adm.author.dto.AuthorDtoRequest;
 import ru.ocrv.library_adm.author.dto.AuthorDtoResponse;
-import ru.ocrv.library_adm.book.service.BookService;
+import ru.ocrv.library_adm.book.BookStorage;
 import ru.ocrv.library_adm.exception.exceptions.AccessDeniedException;
 import ru.ocrv.library_adm.exception.exceptions.NotFoundException;
 
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class AuthorServiceImpl implements AuthorService {
 
     private final AuthorStorage authorStorage;
-    private final BookService bookService;
+    private final BookStorage bookStorage;
 
     @Override
     public AuthorDtoResponse createAuthor(AuthorDtoRequest request) {
@@ -44,7 +44,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public void deleteAuthor(Long id) {
         isAuthorExists(id);
-        if (bookService.isBooksByAuthorExists(id)) {
+        if (bookStorage.existsBookByAuthorId(id)) {
             throw new AccessDeniedException("Для данного автора есть книги в базе");
         }
         authorStorage.deleteById(id);
@@ -94,16 +94,13 @@ public class AuthorServiceImpl implements AuthorService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public Boolean isAuthorExists(Long id) {
+    private void isAuthorExists(Long id) {
         if (!authorStorage.existsAuthorById(id)) {
             throw new NotFoundException("Автор с id " + id + " не найден");
         }
-        return true;
     }
 
-    @Override
-    public Author findAuthor(Long id) {
+    private Author findAuthor(Long id) {
         return authorStorage.findById(id)
                 .orElseThrow(() -> new NotFoundException("Автор с id " + id + " не найден"));
     }

@@ -1,5 +1,8 @@
 package ru.ocrv.library_adm.reader;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -19,10 +22,12 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 @Validated
+@Tag(name = "Читатели", description = "Управление читателями")
 public class ReaderController {
 
     private final ReaderService readerService;
 
+    @Operation(summary = "Добавление нового читателя")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ReaderDtoResponse createReader(@Valid @RequestBody ReaderDtoRequest request) {
@@ -30,33 +35,39 @@ public class ReaderController {
         return readerService.createReader(request);
     }
 
+    @Operation(summary = "Удаление читателя")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteReader(@PathVariable Long id) {
+    public void deleteReader(@PathVariable @Parameter(description = "ID читателя") Long id) {
         log.info("reader - Удаление читателя с id: {}", id);
         readerService.deleteReader(id);
     }
 
+    @Operation(summary = "Обновление читателя")
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ReaderDtoResponse updateReader(@PathVariable Long id,
-                                        @Valid @RequestBody ReaderDtoRequest request) {
+    public ReaderDtoResponse updateReader(@PathVariable @Parameter(description = "ID читателя") Long id,
+                                          @Valid @RequestBody ReaderDtoRequest request) {
         log.info("reader - Обновление читателя с id: {}", id);
         return readerService.updateReader(id, request);
     }
 
+    @Operation(summary = "Получение читателя по ID")
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ReaderDtoResponse getReader(@PathVariable Long id) {
+    public ReaderDtoResponse getReader(@PathVariable @Parameter(description = "ID читателя") Long id) {
         log.info("reader - Получение читателя с id: {}", id);
         return readerService.getReader(id);
     }
 
+    @Operation(summary = "Поиск читателя по строке")
     @GetMapping("/search/{word}")
     @ResponseStatus(HttpStatus.OK)
-    public List<ReaderDtoResponse> searchReaders(@PathVariable String word,
-                                                 @RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                                 @RequestParam(defaultValue = "100") @Positive int size) {
+    public List<ReaderDtoResponse> searchReaders(@PathVariable @Parameter(description = "Строка поиска") String word,
+                                                 @RequestParam(defaultValue = "0")
+                                                 @PositiveOrZero @Parameter(description = "Пагинация с") int from,
+                                                 @RequestParam(defaultValue = "100")
+                                                 @Positive @Parameter(description = "Пагинация размер") int size) {
         log.info("reader - Поиск читателя по фразе: {}", word);
         return readerService.searchReaders(word, from, size);
     }
