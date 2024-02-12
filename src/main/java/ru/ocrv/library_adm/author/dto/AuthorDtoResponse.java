@@ -14,13 +14,13 @@ public class AuthorDtoResponse {
     @Schema(title = "ID", example = "1")
     private Long id;
 
-    @Schema(title = "Имя", example = "Иван")
+    @Schema(title = "Имя", example = "Александр")
     private String firstName;
 
-    @Schema(title = "Фамилия", example = "Иванов")
-    private String lastName;
-
-    @Schema(title = "Отчество", example = "Иванович")
+    @Schema(title = "Отчество", example = "Сергеевич")
     private String patronymic;
+
+    @Schema(title = "Фамилия", example = "Пушкин")
+    private String lastName;
 
 }

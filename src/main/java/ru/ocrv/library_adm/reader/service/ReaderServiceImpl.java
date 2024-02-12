@@ -54,14 +54,14 @@ public class ReaderServiceImpl implements ReaderService {
     @Override
     public ReaderDtoResponse updateReader(Long id, ReaderDtoRequest request) {
         Reader reader = findReader(id);
-        Optional.ofNullable(reader.getPassportNumber()).ifPresent(reader::setPassportNumber);
-        Optional.ofNullable(reader.getPassportSeries()).ifPresent(reader::setPassportSeries);
-        Optional.ofNullable(reader.getFirstName()).ifPresent(reader::setFirstName);
-        Optional.ofNullable(reader.getLastName()).ifPresent(reader::setLastName);
-        Optional.ofNullable(reader.getPatronymic()).ifPresent(reader::setPatronymic);
-        Optional.ofNullable(reader.getAddress()).ifPresent(reader::setAddress);
-        Optional.ofNullable(reader.getEmail()).ifPresent(reader::setEmail);
-        Optional.ofNullable(reader.getPhone()).ifPresent(reader::setPhone);
+        Optional.ofNullable(request.getPassportNumber()).ifPresent(reader::setPassportNumber);
+        Optional.ofNullable(request.getPassportSeries()).ifPresent(reader::setPassportSeries);
+        Optional.ofNullable(request.getFirstName()).ifPresent(reader::setFirstName);
+        Optional.ofNullable(request.getLastName()).ifPresent(reader::setLastName);
+        Optional.ofNullable(request.getPatronymic()).ifPresent(reader::setPatronymic);
+        Optional.ofNullable(request.getAddress()).ifPresent(reader::setAddress);
+        Optional.ofNullable(request.getEmail()).ifPresent(reader::setEmail);
+        Optional.ofNullable(request.getPhone()).ifPresent(reader::setPhone);
 
         Reader updatedReader = readerStorage.save(reader);
         log.info("Обновлен читатель с id: {}", updatedReader.getId());

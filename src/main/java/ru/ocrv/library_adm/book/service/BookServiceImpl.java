@@ -17,6 +17,7 @@ import ru.ocrv.library_adm.book.BookStorage;
 import ru.ocrv.library_adm.book.QBook;
 import ru.ocrv.library_adm.book.dto.BookDtoRequest;
 import ru.ocrv.library_adm.book.dto.BookDtoResponse;
+import ru.ocrv.library_adm.exception.exceptions.AccessDeniedException;
 import ru.ocrv.library_adm.exception.exceptions.NotFoundException;
 
 import java.util.ArrayList;
@@ -45,6 +46,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public void deleteBook(Long id) {
         isBookExists(id);
+        isBookRented(id);
         bookStorage.deleteById(id);
         log.info("Удалена книга с id: {}", id);
     }
@@ -109,7 +111,7 @@ public class BookServiceImpl implements BookService {
     }
 
     private void isBookExists(Long id) {
-        if (bookStorage.existsBookById(id)) {
+        if (!bookStorage.existsBookById(id)) {
             throw new NotFoundException("Книга с id " + id + " не найдена");
         }
     }
@@ -127,6 +129,12 @@ public class BookServiceImpl implements BookService {
     private void isAuthorExists(Long id) {
         if (!authorStorage.existsAuthorById(id)) {
             throw new NotFoundException("Автор с id " + id + " не найден");
+        }
+    }
+
+    private void isBookRented(Long id) {
+        if (bookStorage.existsBookByIdAndRented(id, true)) {
+            throw new AccessDeniedException("Книга находится в аренде");
         }
     }
 

@@ -13,16 +13,17 @@ import org.hibernate.validator.constraints.Length;
 @Schema(title = "Запрос к эндпоинту авторов")
 public class AuthorDtoRequest {
 
-    @Schema(title = "Имя", example = "Иван")
+    @Schema(title = "Имя", example = "Александр")
     @NotBlank(message = "Имя должно быть заполнено")
     @Length(min = 2, max = 100)
     private String firstName;
 
-    @Schema(title = "Фамилия", example = "Иванов")
+    @Schema(title = "Отчество", example = "Сергеевич")
+    @Length(min = 2, max = 100)
+    private String patronymic;
+
+    @Schema(title = "Фамилия", example = "Пушкин")
     @Length(min = 2, max = 100)
     private String lastName;
 
-    @Schema(title = "Отчество", example = "Иванович")
-    @Length(min = 2, max = 100)
-    private String patronymic;
 }
